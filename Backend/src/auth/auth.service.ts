@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { registerUserDto } from './dto/registerUser.dto.';
 import * as bcrypt from 'bcrypt';
@@ -15,5 +15,11 @@ export class AuthService {
             ...dto,
             password: hashedPassword,
         });
+
+        if(!user){
+          throw new InternalServerErrorException('Failed to register user');
+        }
+
+        return { message: 'User registered successfully' };
   }
 }

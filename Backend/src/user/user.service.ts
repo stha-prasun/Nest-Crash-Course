@@ -24,8 +24,9 @@ export class UserService {
       email: dto.email,
       password: dto.password,
     });
+    
     await this.userRepository.save(user);
 
-    return { message: 'User registered successfully' };
+    return user;
   }
 }

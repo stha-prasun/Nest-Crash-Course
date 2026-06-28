@@ -1,9 +1,18 @@
-export class registerUserDto{
-    fname!: string;
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-    lname!: string;
+export class registerUserDto {
+  @IsString()
+  @IsNotEmpty()
+  fname!: string;
 
-    email!: string;
+  @IsString()
+  @IsNotEmpty()
+  lname!: string;
 
-    password!: string;
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  password!: string;
 }
