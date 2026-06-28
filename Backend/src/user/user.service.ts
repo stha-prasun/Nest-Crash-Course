@@ -12,21 +12,25 @@ export class UserService {
   ) {}
 
   async createUser(dto: registerUserDto) {
-    const existing = await this.userRepository.findOne({
-      where: { email: dto.email },
-    });
+    try {
+      const existing = await this.userRepository.findOne({
+        where: { email: dto.email },
+      });
 
-    if (existing) throw new ConflictException('Email already registered');
+      if (existing) throw new ConflictException('Email already registered');
 
-    const user = this.userRepository.create({
-      fname: dto.fname,
-      lname: dto.lname,
-      email: dto.email,
-      password: dto.password,
-    });
-    
-    await this.userRepository.save(user);
+      const user = this.userRepository.create({
+        fname: dto.fname,
+        lname: dto.lname,
+        email: dto.email,
+        password: dto.password,
+      });
 
-    return user;
+      await this.userRepository.save(user);
+
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

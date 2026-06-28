@@ -7,17 +7,21 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(private readonly userService: UserService) {}
   async regsiterUser(dto: registerUserDto) {
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    try {
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user = await this.userService.createUser({
-      ...dto,
-      password: hashedPassword,
-    });
+      const user = await this.userService.createUser({
+        ...dto,
+        password: hashedPassword,
+      });
 
-    if (!user) {
-      throw new InternalServerErrorException('Failed to register user');
+      if (!user) {
+        throw new InternalServerErrorException('Failed to register user');
+      }
+
+      return { message: 'User registered successfully' };
+    } catch (error) {
+      console.log(error);
     }
-
-    return { message: 'User registered successfully' };
   }
 }
