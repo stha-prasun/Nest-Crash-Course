@@ -1,12 +1,21 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { registerUserDto } from './dto/registerUser.dto.';
+import { registerUserDto } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { loginUserDTO } from './dto/loginUser.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
-  async regsiterUser(dto: registerUserDto) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async registerUser(dto: registerUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     const user = await this.userService.createUser({
@@ -19,5 +28,14 @@ export class AuthService {
     }
 
     return { message: 'User registered successfully' };
+  }
+
+  async loginUser(dto: loginUserDTO) {
+    const user = await this.userService.loginUser(dto);
+
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    return { accessToken };
   }
 }

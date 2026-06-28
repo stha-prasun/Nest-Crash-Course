@@ -1,8 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { registerUserDto } from 'src/auth/dto/registerUser.dto.';
+import { registerUserDto } from 'src/auth/dto/registerUser.dto';
 import { User } from './schemas/userEntity';
 import { Repository } from 'typeorm';
+import { loginUserDTO } from 'src/auth/dto/loginUser.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -26,6 +28,21 @@ export class UserService {
     });
     
     await this.userRepository.save(user);
+
+    return user;
+  }
+
+
+  async loginUser(dto: loginUserDTO){
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const isMatch = await bcrypt.compare(dto.password, user.password);
+
+    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
     return user;
   }
