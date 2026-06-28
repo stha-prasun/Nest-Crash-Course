@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { registerUserDto } from 'src/auth/dto/registerUser.dto';
 import { User } from './schemas/userEntity';
@@ -26,14 +30,13 @@ export class UserService {
       email: dto.email,
       password: dto.password,
     });
-    
+
     await this.userRepository.save(user);
 
     return user;
   }
 
-
-  async loginUser(dto: loginUserDTO){
+  async loginUser(dto: loginUserDTO) {
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
     });
@@ -45,5 +48,9 @@ export class UserService {
     if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
     return user;
+  }
+
+  async getUserById(id: string) {
+    return await this.userRepository.findOne({ where: { id: id } });
   }
 }
